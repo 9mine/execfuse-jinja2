@@ -1,0 +1,13 @@
+echo ${DIR_NAME} | awk -F/ '
+BEGIN {
+  printf("export LVL1=\"/\"\n")
+  for (i = 2; i <= NF; i++) {
+    printf("export LVL%d=\"%s\"\n", i, $i)
+  } 
+} 
+{
+  path=$0
+
+{{ tree("/", fs, none) }}
+
+}' | sh - | tee /tmp/aws_debug.txt | (sh - | tee /tmp/cache_`echo ${DIR_NAME} | md5sum - | cut -f1 -d" "`)

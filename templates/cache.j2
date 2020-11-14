@@ -1,0 +1,5 @@
+CACHE_FILE_NAME="/tmp/cache_{{ fs_op }}_`echo ${DIR_NAME} | md5sum - | cut -f1 -d' '`"
+if [ -f "${CACHE_FILE_NAME}" ]; then
+  cat ${CACHE_FILE_NAME}
+  exit 0
+fi
