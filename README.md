@@ -2,7 +2,7 @@ Very early PoC stage, more details coming soon
 
 Next command will generate execfuse-like files based on command definitions in `examples/sls.yml`
 ```
-cat examples/sls.yml | docker run --rm -i diervi/execfuse-jinja2:master | tar xvf - -C .
+cat examples/sls.yml | docker run --rm -i dievri/execfuse-jinja2:master | tar xvf - -C .
 ```
 
 The result should looks like
