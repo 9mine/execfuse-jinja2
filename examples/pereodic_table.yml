@@ -1,0 +1,103 @@
+awk_fuse_parser: &awk_fuse_parser |
+    awk '
+    function execfuse_entity(path) {
+      return sprintf("ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=1024 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 %s\n", path) 
+    }   
+    BEGIN { 
+        printf("%s", execfuse_entity(".")) 
+        printf("%s", execfuse_entity("..")) 
+    }
+    {   
+      printf("%s", execfuse_entity($0)) 
+    }' | xargs -I{} sh -c "printf '{}\0'"
+
+printf_parser: &printf_parser
+  xargs -I{} sh -c "printf 'ino=1 mode=drwxr-xr-x nlink=4 uid=0 gid=0 rdev=0 size=1224 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 {}\0'"
+  
+
+#slsfs_root: &slsfs_root
+
+dir: &dir
+  cmd:
+    - echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '
+  parser:  
+    - cat 
+
+file: &file
+  cmd:
+    - echo 'ino=1 mode=-rwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '
+  parser:  
+    - cat
+
+slsfs_ctl: &slsfs_ctl
+  cmd:
+    - echo kubeless; echo fission
+  parser:  
+    - *awk_fuse_parser
+
+slsfs_funcs: &slsfs_funcs
+  cmd:
+    - kubeless function list -o json | jq -r '.[].metadata.name'
+  parser:  
+    - *awk_fuse_parser
+
+kubeless_func_types: &kubeless_func_types
+  cmd:
+    - echo python; echo nodejs
+  parser:  
+    - *awk_fuse_parser
+
+kubeless_new_python_func: &kubeless_w_ctl_file
+  cmd:
+    - echo xxxx | tee /tmp/ffffff
+  parser:
+    - cat
+
+kubeless_new_python_func: &kubeless_new_python_func
+  cmd:
+    - >
+      export TEMP_DIR=`mktemp -d /tmp/kubeless_XXXXXXX`; 
+      cd $TEMP_DIR;
+      export FUNC_NAME=python-`date +%s`;
+      sed -i'' "s/hello/$FUNC_NAME/g" serverless.yml handler.py;
+      sls create --template kubeless-python --name $FUNC_NAME;
+      cat $PAYLOAD_TMP_FILE > handler.py;
+      sls plugin install --name serverless-kubeless;
+      npm install;
+      sls deploy;
+  parser:
+    - cat
+
+kubeless_func_call: &kubeless_func_call
+  cmd:
+    - >
+      FUNC_NAME="`basename $DIR_NAME`";
+      kubeless function call "$FUNC_NAME"
+  parser:
+    - cat
+
+
+wrapper_name: pereodic_table
+
+fs:
+  "/": # /slsfs
+    readdir: 
+      cmd:
+        - lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
+      parser:  
+        - *awk_fuse_parser
+    getattr: *dir
+    "/[^/]+": # /slsfs/funcs
+      readdir: 
+        cmd:
+          - echo group; echo period; echo weight; 
+        parser:
+          - *awk_fuse_parser
+      getattr:  *dir
+      "/[^/]+":
+        read_file:
+          cmd:
+            - echo group
+          parser: 
+            - *awk_fuse_parser 
+        getattr:  *file
