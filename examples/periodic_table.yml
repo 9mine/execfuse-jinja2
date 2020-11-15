@@ -1,0 +1,54 @@
+# $ ls -ltr /tmp/p/
+# Display all 118 possibilities? (y or n)
+# Ac/ Am/ At/ Ba/ Bi/ C/  Ce/ Cm/ Cr/ Db/ Er/ F/  Fm/ Gd/ He/ Ho/ In/ Kr/ Lr/ Mc/ Mn/ N/  Nd/ Ni/ O/  P/  Pd/ Pr/ Ra/ Rf/ Rn/ Sb/ Sg/ Sn/ Tb/ Th/ Tm/ V/  Y/  Zr/ 
+# Ag/ Ar/ Au/ Be/ Bk/ Ca/ Cf/ Cn/ Cs/ Ds/ Es/ Fe/ Fr/ Ge/ Hf/ Hs/ Ir/ La/ Lu/ Md/ Mo/ Na/ Ne/ No/ Og/ Pa/ Pm/ Pt/ Rb/ Rg/ Ru/ Sc/ Si/ Sr/ Tc/ Ti/ Ts/ W/  Yb/ 
+# Al/ As/ B/  Bh/ Br/ Cd/ Cl/ Co/ Cu/ Dy/ Eu/ Fl/ Ga/ H/  Hg/ I/  K/  Li/ Lv/ Mg/ Mt/ Nb/ Nh/ Np/ Os/ Pb/ Po/ Pu/ Re/ Rh/ S/  Se/ Sm/ Ta/ Te/ Tl/ U/  Xe/ Zn/
+# $ tree /tmp/p/H /tmp/p/Ca
+# /tmp/p/H
+# ├── density
+# ├── image
+# ├── melt
+# ├── name
+# ├── number
+# ├── period
+# └── phase
+# /tmp/p/Ca
+# ├── density
+# ├── image
+# ├── melt
+# ├── name
+# ├── number
+# ├── period
+# └── phase
+# $ cat /tmp/p/Ca/period
+# 4
+
+
+
+{% include './common.j2' %}
+wrapper_name: periodic_table
+
+# todo
+fs:
+  "/":                                                    
+    cache: 3600 #in second
+    readdir: lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
+    getattr: *dir
+    "/[^/]+": #                                           # /<element_name>
+      cache: 3600000 #in second
+      name: element_name
+      getattr: *dir
+      readdir: 
+        - name
+        - density
+        - melt
+        - number
+        - period
+        - phase
+        - image
+      "/[a-z]+$":
+        cache: 9600 # in seconds
+        name: element_property
+        #read_file: curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq '.[] | select(.symbol == "'${element_name}'").'"${element_property}"
+        read_file: curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").'${element_property}
+        getattr: *file

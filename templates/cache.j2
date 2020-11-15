@@ -1,5 +1,8 @@
-CACHE_FILE_NAME="/tmp/cache_{{ fs_op }}_`echo ${DIR_NAME} | md5sum - | cut -f1 -d' '`"
-if [ -f "${CACHE_FILE_NAME}" ]; then
-  cat ${CACHE_FILE_NAME}
-  exit 0
-fi
+CACHE_FILE_NAME="cache_{{ fs_op }}_`echo ${DIR_NAME} | md5sum - | cut -f1 -d' '`"
+#if [ -f "${CACHE_FILE_NAME}" ]; then
+#  cached_time=`stat -Y% ${CACHE_FILE_NAME}` 
+#  current_time=`date +%s`
+#  cat ${CACHE_FILE_NAME}
+#  exit 0
+#fi
+#echo NO USE CACHE $CACHE_FILE_NAME | logger -t level7.info
