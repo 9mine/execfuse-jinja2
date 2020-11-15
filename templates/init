@@ -1,0 +1,5 @@
+#!/bin/sh
+
+{% include 'common.j2' %}
+
+mkdir -p ${HOME_TMP}

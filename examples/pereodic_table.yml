@@ -31,9 +31,11 @@ wrapper_name: pereodic_table
 # todo
 fs:
   "/":                                                    
+    cache: 3600 #in second
     readdir: lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
     getattr: *dir
     "/[^/]+": #                                           # /<element_name>
+      cache: 3600000 #in second
       name: element_name
       getattr: *dir
       readdir: 
@@ -45,6 +47,7 @@ fs:
         - phase
         - image
       "/[a-z]+$":
+        cache: 9600 # in seconds
         name: element_property
         #read_file: curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq '.[] | select(.symbol == "'${element_name}'").'"${element_property}"
         read_file: curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").'${element_property}

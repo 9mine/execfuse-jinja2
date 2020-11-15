@@ -25,6 +25,7 @@ export DIR_NAME=$1
   {% endfor %}
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
+    try_cache(CACHE_FILE_NAME, {{ fs.cache }})
     {# set context #} 
     path_lvl=NF-1
     {% if fs["__parent"] is mapping and "name" in fs['__parent'] %}
