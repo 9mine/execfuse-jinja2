@@ -26,7 +26,7 @@
 
 
 {% include './common.j2' %}
-wrapper_name: pereodic_table
+wrapper_name: periodic_table
 
 # todo
 fs:
