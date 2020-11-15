@@ -1,17 +1,11 @@
 #!/bin/sh
-{% set fs_op  = self._TemplateReference__context.name %}
+{% set fs_op = self._TemplateReference__context.name %}
+{% include 'common.j2' %}
 set -e
+cd ${HOME_TMP}
 export DIR_NAME=$1
 
-CACHE_NAME="/tmp/cache_`echo ${DIR_NAME} | md5sum - | cut -f1 -d' '`"
-#if [ -f "${CACHE_NAME}" ]; then
-#  cat ${CACHE_NAME}
-#  echo ${DIR_NAME} use cache ${CACHE_NAME} >> /tmp/aws_log
-#  exit 0
-#fi
-
-echo {{ fs_op }} $DIR_NAME >> /tmp/aws_debug
-
+{% include 'cache.j2' %}
 
 {% macro tree(parent_path, fs, parent_fs) %}
 
@@ -19,9 +13,9 @@ echo {{ fs_op }} $DIR_NAME >> /tmp/aws_debug
     {% set dummy=fs.__setitem__("__parent", parent_fs) %}
   {% endif %}
 
-  {% for path in fs %}
+  {%- for path in fs -%}
     {# skip virtual parent ref #}
-    {% if path == "__parent" %}
+    {%- if path == "__parent" -%}
       {% continue %} 
     {% endif %} {# if path == "__parent" #}
     {% if path != fs_op and path[:1] == "/" %} 
@@ -31,6 +25,11 @@ echo {{ fs_op }} $DIR_NAME >> /tmp/aws_debug
   {% endfor %}
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
+    {% if "name" in fs %}
+    printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
+    {% endif %}
+
+
     {# set context #} 
     path_lvl=NF-1
     {% if fs["__parent"] is mapping and "name" in fs['__parent'] %}
@@ -39,28 +38,11 @@ echo {{ fs_op }} $DIR_NAME >> /tmp/aws_debug
     {% endif %}
 
 
-    {% set dir = fs[fs_op] %}
-    {% if "cmd" in dir %}
-      {% set cmd = dir["cmd"] | join(" |") %}
-      {% set parser = dir["parser"] | join(" |") %}
-      {% set cmd = "( " + cmd + " )" %} 
-      {% set parser = "( " + parser + " )" %} 
-      printf("echo {{ ( cmd + " | " + parser ) | b64encode }} | base64 -d\n")
-    {% endif %} {# if "cmd" in dir #}
+
+    {% set handler = fs[fs_op] %}
+    printf("echo {{ handler | b64encode }} | base64 -d\n")
   {% endif %} {# if fs_op in fs #}
   } 
 {%- endmacro %}
 
-echo ${DIR_NAME} | awk -F/ '
-BEGIN {
-  printf("export LVL1=\"/\"\n")
-  for (i = 2; i <= NF; i++) {
-    printf("export LVL%d=\"%s\"\n", i, $i)
-  } 
-} 
-{
-  path=$0
-
-{{ tree("/", fs, none) }}
-
-}' | sh - | tee /tmp/aws_debug.txt | (sh - | tee /tmp/cache_`echo ${DIR_NAME} | md5sum - | cut -f1 -d" "`)
+{% include 'fs_awk_loop.j2' %}

@@ -10,4 +10,4 @@ BEGIN {
 
 {{ tree("/", fs, none) }}
 
-}' | sh - | tee /tmp/aws_debug.txt | (sh - | tee /tmp/cache_`echo ${DIR_NAME} | md5sum - | cut -f1 -d" "`)
+}' | sh - | (sh - | tee cache_{{ fs_op }}_`echo ${DIR_NAME} | md5sum - | cut -f1 -d" "`)

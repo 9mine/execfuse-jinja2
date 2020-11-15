@@ -39,14 +39,8 @@ echo {{ fs_op }} $DIR_NAME >> /tmp/aws_debug
     {% endif %}
 
 
-    {% set dir = fs[fs_op] %}
-    {% if "cmd" in dir %}
-      {% set cmd = dir["cmd"] | join(" |") %}
-      {% set parser = dir["parser"] | join(" |") %}
-      {% set cmd = "( " + cmd + " )" %} 
-      {% set parser = "( " + parser + " )" %} 
-      printf("echo {{ ( cmd + " | " + parser ) | b64encode }} | base64 -d\n")
-    {% endif %} {# if "cmd" in dir #}
+    {% set handler = fs[fs_op] %}
+    printf("echo {{ handler  | b64encode }} | base64 -d\n")
   {% endif %} {# if fs_op in fs #}
   } 
 {%- endmacro %}

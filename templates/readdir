@@ -1,6 +1,8 @@
 #!/bin/sh
-{% set fs_op  = self._TemplateReference__context.name %}
+{% set fs_op = self._TemplateReference__context.name %}
+{% include 'common.j2' %}
 set -e
+cd ${HOME_TMP}
 export DIR_NAME=$1
 
 {% include 'cache.j2' %}
@@ -11,9 +13,9 @@ export DIR_NAME=$1
     {% set dummy=fs.__setitem__("__parent", parent_fs) %}
   {% endif %}
 
-  {% for path in fs %}
+  {%- for path in fs -%}
     {# skip virtual parent ref #}
-    {% if path == "__parent" %}
+    {%- if path == "__parent" -%}
       {% continue %} 
     {% endif %} {# if path == "__parent" #}
     {% if path != fs_op and path[:1] == "/" %} 
@@ -30,15 +32,16 @@ export DIR_NAME=$1
     path_lvl=path_lvl-1  
     {% endif %}
 
+    {% if fs[fs_op] is string %}
+      {% set parser = fs[hander_parser] | default(handler_parser) %}
+      {% set handler = "(" + fs[fs_op] + ") | (" + parser + ")" %}
+      printf("echo {{ handler | b64encode }} | base64 -d\n")
+    {% elif fs[fs_op] is iterable and (fs[fs_op] is not string and fs[fs_op] is not mapping) %}
+      {% set parser = fs[hander_parser] | default(handler_parser) %}
+      {% set handler = "( echo " + fs[fs_op] | join("; echo ") + ") | " + parser %} 
+      printf("echo {{ handler | b64encode }} | base64 -d\n")
+    {% endif %} {# # handler is string #} 
 
-    {% set dir = fs[fs_op] %}
-    {% if "cmd" in dir %}
-      {% set cmd = dir["cmd"] | join(" |") %}
-      {% set parser = dir["parser"] | join(" |") %}
-      {% set cmd = "( " + cmd + " )" %} 
-      {% set parser = "( " + parser + " )" %} 
-      printf("echo {{ ( cmd + " | " + parser ) | b64encode }} | base64 -d\n")
-    {% endif %} {# if "cmd" in dir #}
   {% endif %} {# if fs_op in fs #}
   } 
 {%- endmacro %}

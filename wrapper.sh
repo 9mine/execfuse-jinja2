@@ -54,7 +54,7 @@ EOF
 
 test -d ${COMPILED_DIR} || mkdir -p ${COMPILED_DIR} 
 
-ls_templates | xargs -P6 -I{} sh -xce '
+ls_templates | xargs -P1 -I{} sh -xce '
 
   FILE_PATH={}
   export FILE_NAME=`basename ${FILE_PATH}`
