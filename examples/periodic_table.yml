@@ -28,7 +28,6 @@
 {% include './common.j2' %}
 wrapper_name: periodic_table
 
-# todo
 fs:
   "/":                                                    
     cache: 3600 #in second
