@@ -14,4 +14,4 @@ echo $NINEP_PUBLIC_HOST > /tmp/sysname
 bind /tmp/sysname /dev/sysname
 grid/reglisten -A -r svc rstyx 'tcp!*!'$port { export $dir &} &
 unmount /dev/sysname
-rm /tmp/sysname
+#rm /tmp/sysname
