@@ -11,7 +11,13 @@ test -d /mnt/registry || mkdir -p /mnt/registry
 mount -A tcp!registry!registry /mnt/registry
 
 echo $NINEP_PUBLIC_HOST > /tmp/sysname
+echo '---- cat /dev/sysname ----'
+cat /dev/sysname
+echo '---- bind /dev/sysname ----'
+cat /dev/sysname
 bind /tmp/sysname /dev/sysname
 grid/reglisten -A -r svc rstyx 'tcp!*!'$port { export $dir &} &
 unmount /dev/sysname
+echo '---- unmount /dev/sysname ----'
+cat /dev/sysname
 #rm /tmp/sysname
