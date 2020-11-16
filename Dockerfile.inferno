@@ -8,7 +8,7 @@ WORKDIR /tmp/execfuse
 RUN make execfuse-static
 RUN cp ./execfuse-static /usr/local/bin/execfuse-static
 
-FROM ubuntu:focal 
+FROM dievri/inferno-os:focal 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y \
   libc6-dev-i386    
@@ -30,4 +30,4 @@ RUN mkdir -p /execfuse-fs /usr/inferno-os/host/execfuse-fs
 # execfuse templated files
 #COPY --from=builder /execfuse-fs /execfuse-fs
 
-ENTRYPOINT ["sh", "-c", "execfuse-static /execfuse-fs /usr/inferno-os/host/execfuse-fs && emu /dis/sh /lib/sh/profile"]
+ENTRYPOINT ["sh", "-c", "execfuse-static /execfuse-fs /usr/inferno-os/host/execfuse-fs && emu-g /dis/sh /lib/sh/profile"]
