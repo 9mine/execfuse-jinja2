@@ -1,5 +1,5 @@
 FROM alpine:3.11
-RUN apk add --no-cache py3-pip bash findutils jq && \
+RUN apk add --no-cache py3-pip bash findutils jq tar && \
  pip3 install jinja2-cli jinja2-ansible-filters yq
 
 ADD . /execfuse-jinja2 
