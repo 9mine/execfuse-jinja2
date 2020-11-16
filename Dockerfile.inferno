@@ -57,10 +57,6 @@ ADD files/inferno/profile /usr/inferno-os/lib/sh/profile
 RUN curl -Lo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.4.0/yq_linux_386 && \
   chmod +x /usr/local/bin/yq
 
-WORKDIR /usr/local/bin
-RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-RUN chmod +x kubectl
-
 # mount point
 RUN mkdir -p /usr/inferno-os/host/execfuse-fs
 

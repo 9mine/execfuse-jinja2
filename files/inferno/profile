@@ -6,4 +6,8 @@ for host_var in `{ os env } { '{'$host_var'}' }
 dir = $EXPORT_PATH
 port = $EXPORT_PORT
 
-listen -A 'tcp!*!'$port { export $dir & } &
+test -d /mnt/registry || mkdir -p /mnt/registry
+mount -A tcp!registry!registry /mnt/registry
+
+
+grid/reglisten -A -r svc rstyx 'tcp!*!'$port { export $dir &} &
