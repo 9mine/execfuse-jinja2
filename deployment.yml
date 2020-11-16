@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: execfuse-jinja
+spec:
+
+  restartPolicy: Never
+
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+
+  containers:
+
+  - name: inferno
+    image: dievri/9p-execfuse-jinja2:master
+    volumeMounts:
+    - name: shared-data
+      mountPath: /execfuse-fs
+
+  - name: execfuse-jinja2
+    image: dievri/execfuse-jinja2:master
+    volumeMounts:
+    - name: shared-data
+      mountPath: /execfuse-fs
+    command: ["/bin/sh"]
+    args: ["-c", "jinja2 /tmp/input.yml | wrapper.sh fs | tar xcvf - -C /execfuse-fs"]
