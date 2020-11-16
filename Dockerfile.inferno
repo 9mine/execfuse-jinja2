@@ -30,4 +30,4 @@ RUN mkdir -p /execfuse-fs /usr/inferno-os/host/execfuse-fs
 # execfuse templated files
 #COPY --from=builder /execfuse-fs /execfuse-fs
 
-ENTRYPOINT ["sh", "-c", "execfuse-static /execfuse-fs /usr/inferno-os/host/execfuse-fs && emu-g /dis/sh /lib/sh/profile"]
+ENTRYPOINT ["sh", "-c", "execfuse-static /execfuse-fs /usr/inferno-os/host/execfuse-fs && emu /dis/sh /lib/sh/profile"]
