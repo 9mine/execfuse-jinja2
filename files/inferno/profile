@@ -4,10 +4,14 @@ ndb/cs
 for host_var in `{ os env } { '{'$host_var'}' }
 
 dir = $EXPORT_PATH
-port = $EXPORT_PORT
+port = $NINEP_PUBLIC_PORT
+
 
 test -d /mnt/registry || mkdir -p /mnt/registry
 mount -A tcp!registry!registry /mnt/registry
 
-
+echo $NINEP_PUBLIC_HOST > /tmp/sysname
+bind /tmp/sysname /dev/sysname
 grid/reglisten -A -r svc rstyx 'tcp!*!'$port { export $dir &} &
+unmount /dev/sysname
+rm /tmp/sysname
