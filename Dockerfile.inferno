@@ -25,7 +25,7 @@ RUN curl -Lo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download
   chmod +x /usr/local/bin/yq
 
 # mount point
-RUN mkdir -p /usr/inferno-os/host/execfuse-fs
+RUN mkdir -p /execfuse-fs /usr/inferno-os/host/execfuse-fs
 
 # execfuse templated files
 #COPY --from=builder /execfuse-fs /execfuse-fs
