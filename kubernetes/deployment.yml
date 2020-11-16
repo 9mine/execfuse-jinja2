@@ -21,7 +21,16 @@ spec:
   - name: execfuse-jinja2
     image: dievri/execfuse-jinja2:master
     volumeMounts:
-    - name: shared-data
-      mountPath: /execfuse-fs
+      - name: shared-data
+        mountPath: /execfuse-fs
+      - name: config-volume
+        mountPath: /tmp/fs.yml
+        subPath: fs.yml
     command: ["/bin/sh"]
-    args: ["-c", "jinja2 /tmp/input.yml | wrapper.sh fs | tar xcvf - -C /execfuse-fs"]
+    args: ["-c", "jinja2 /tmp/fs.yml | wrapper.sh fs | tar xcvf - -C /execfuse-fs"]
+  volumes:
+    - name: config-volume
+      configMap: 
+        name: execfuse-j2-definition
+    - name: shared-data
+      emptyDir: {}
