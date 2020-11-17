@@ -34,7 +34,7 @@ fs:
     readdir: lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
     getattr: *dir
     "/[^/]+": #                                           # /<element_name>
-      cache: 3600000 #in second
+      #cache: 3600000 #in second
       name: element_name
       getattr: *dir
       readdir: 

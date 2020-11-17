@@ -26,7 +26,7 @@ export DIR_NAME=$1
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
 
-    try_cache(CACHE_FILE_NAME, {{ fs.cache }})
+    try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
 
     {% if "name" in fs %}
     printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
