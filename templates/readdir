@@ -33,6 +33,10 @@ export DIR_NAME=$1
     path_lvl=path_lvl-1  
     {% endif %}
 
+    {% if "name" in fs %}
+    printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
+    {% endif %}
+
     {% if fs[fs_op] is string %}
       {% set parser = fs[hander_parser] | default(handler_parser) %}
       {% set handler = "(" + fs[fs_op] + ") | (" + parser + ")" %}
