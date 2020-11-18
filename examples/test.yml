@@ -1,0 +1,16 @@
+{% include 'common.j2' %}
+wrapper_name: test
+
+fs:
+  "/":
+    name: profile_number
+    readdir: 
+      - kubeconfig
+    getattr: *dir
+    "/kubeconfig":
+      name: id_name
+      getattr: *file
+      write_file: |
+        cat $CACHE_FILE_NAME > /tmp/kubeconfig.xxx
+      read_file: |
+        cat /tmp/kubeconfig.xxx
