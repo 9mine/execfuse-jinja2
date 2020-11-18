@@ -1,6 +1,7 @@
 echo ${DIR_NAME} | awk -v CACHE_FILE_NAME=$CACHE_FILE_NAME -F/ '
 function try_cache(filename, timeout) {
-  "stat -c %Y "filename | getline cached_time
+  cmd = sprintf("stat -c %%Y %s", filename)
+  cmd | getline cached_time
   if (systime() - cached_time <= timeout) {
     printf("echo cat %s\n", CACHE_FILE_NAME)
     exit(0)
