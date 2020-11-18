@@ -29,7 +29,7 @@ init
 } 
 
 #TEMPLATE=`cat`
-export TMP_FILE_ORIG=`mktemp /tmp/execfuse_jinja2.yml.XXXXXX`
+export TMP_FILE_ORIG=`mktemp execfuse_jinja2.yml.XXXXXX`
 export TMP_FILE="${TMP_FILE_ORIG}_j2"
 cat > ${TMP_FILE_ORIG}
 jinja2 $TMP_FILE_ORIG > $TMP_FILE
@@ -64,4 +64,5 @@ ls_templates | xargs -P1 -I{} sh -xce '
 '
 
 chmod +x ${COMPILED_DIR}/*
+rm -v $TMP_FILE $TMP_FILE_ORIG
 tar cvf - ${COMPILED_DIR}/*
