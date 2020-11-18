@@ -64,5 +64,5 @@ ls_templates | xargs -P1 -I{} sh -xce '
 '
 
 chmod +x ${COMPILED_DIR}/*
-rm -v $TMP_FILE $TMP_FILE_ORIG
+rm $TMP_FILE $TMP_FILE_ORIG
 tar cvf - ${COMPILED_DIR}/*
