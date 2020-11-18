@@ -9,9 +9,10 @@ function try_cache(filename, timeout) {
 } 
 BEGIN {
 
-  printf("export LVL1=\"/\"\n")
+  printf("echo export LVL1=\"/\"\n")
+  printf("echo export CACHE_FILE_NAME=%s\n", CACHE_FILE_NAME)
   for (i = 2; i <= NF; i++) {
-    printf("export LVL%d=\"%s\"\n", i, $i)
+    printf("echo export LVL%d=\"%s\"\n", i, $i)
   } 
 } 
 {
