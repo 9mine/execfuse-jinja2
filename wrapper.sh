@@ -35,7 +35,7 @@ cat > ${TMP_FILE_ORIG}
 jinja2 $TMP_FILE_ORIG > $TMP_FILE
 
 export TEMPLATE_DIR="templates/"
-export WRAPPER_NAME=`cat $TMP_FILE | yq -r '.wrapper_name' || :`
+export WRAPPER_NAME=`cat $TMP_FILE | yq - r 'wrapper_name' || :`
 export COMPILED_DIR="${1:-$WRAPPER_NAME}"
 
 test -n "${COMPILED_DIR}" || {
