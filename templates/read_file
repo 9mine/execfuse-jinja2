@@ -33,6 +33,7 @@ export DIR_NAME=$1
     printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
     exit
     {% endif %}
+  }
   {% endfor %} 
 
   if (path !~ /^\/.lua.*/ && path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {

@@ -27,21 +27,23 @@ export DIR_NAME=$1
   {% endfor %}
 
   if (path == "/.lua") {
-    printf("echo ZWNobyAnaW5vPTEgbW9kZT1kcnd4ci14ci14IG5saW5rPTEgdWlkPTAgZ2lkPTAgcmRldj0wIHNpemU9MCBibGtzaXplPTUxMiBibG9ja3M9MiBhdGltZT0wIG10aW1lPTAgY3RpbWU9MCAn | base64 -d\n")
+    printf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
     exit
   } 
 
-  {%- for e_fs_op in execfuse_fs_ops %}
-  if (path ~ /^\/.lua{{ (parent_path + "/" + e_fs_op) | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
-    {% if e_fs_op in fs and "lua" in fs[e_fs_op] %}
-      {% set lua_data = fs[e_fs_op]["lua"] %}
-    printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
-    exit
-    {% endif %}
+  {%- set r1 =  parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") %}
+  if (path ~ /^\/.lua{{ r1 }}$/) {
+    # by default all .lua entites are directories, exclude names from execfuse_fs_ops
+    output = sprintf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
+    {% for e_fs_op in execfuse_fs_ops %}
+      if ($NF == "{{ e_fs_op }}") {
+        output = sprintf("echo {{ "echo 'ino=1 mode=-rwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0'" | b64encode }} | base64 -d\n")
+      } 
+    {% endfor %} 
+    printf(output)
+    exit 0
   }
-  {% endfor %} 
-
-  if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
+  if (path ~ /^{{ r1 }}$/) {
   {% if fs_op in fs %}
     {# set context #} 
     path_lvl=NF-1
