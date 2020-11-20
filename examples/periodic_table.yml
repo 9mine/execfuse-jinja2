@@ -38,7 +38,7 @@ fs:
     getattr: 
       sh: *dir
       lua: print(".getattr.lua /")
-    "/[^/]+": #                                           # /<element_name>
+    "/.*": #                                           # /<element_name>
       cache: 3600000 #in second
       name: element_name
       getattr: 
@@ -55,7 +55,7 @@ fs:
           - image
         lua: print(".readdir.lua")
 
-      "/image$":
+      "/image":
         cache: 9600 # in seconds
         read_file: 
           sh: |
