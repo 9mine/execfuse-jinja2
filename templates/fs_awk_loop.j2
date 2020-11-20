@@ -18,13 +18,6 @@ BEGIN {
 {
   path=$0
   
-  {% if fs_op == "getattr" %}
-  if ($NF ~ /^.lua\/.*/) {
-    printf("echo {{ "echo 'ino=1 mode=-rwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
-    exit
-  } 
-  {% endif %}
-
 {{ tree("/", fs, none) }}
 
 }' | sh - | sh - | tee new_$CACHE_FILE_NAME && mv new_$CACHE_FILE_NAME $CACHE_FILE_NAME
