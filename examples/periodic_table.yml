@@ -34,16 +34,16 @@ fs:
     readdir: 
       sh: |
         lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
-      lua: print(".readdir.lua")
+      lua: print(".readdir.lua /")
     getattr: 
       sh: *dir
-      lua: print(".getattr.lua")
+      lua: print(".getattr.lua /")
     "/[^/]+": #                                           # /<element_name>
       cache: 3600000 #in second
       name: element_name
       getattr: 
         sh: *dir
-        lua: print(".getattr.lua")
+        lua: print(".getattr.lua /<element_name>")
       readdir: 
         list:
           - name
@@ -61,10 +61,10 @@ fs:
           sh: |
             URL=`curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").image'`
             curl -o ${URL}
-          lua: print(".read_file.lua")
+          lua: print(".read_file.lua /<element_name>/<property>")
         getattr: 
           sh: *file
-          lua: print(".getattr.lua") 
+          lua: print(".getattr.lua /<element_name>/<property>") 
             
 
       "/[a-z]+$":

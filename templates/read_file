@@ -23,6 +23,15 @@ export DIR_NAME=$1
       {% continue %}
     {% endif %} {# if path != fs_op #}
   {% endfor %}
+
+  if (path ~ /^{{ (parent_path + '.readdir\.lua') | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
+    {% if "readdir" in fs and "lua" in fs["readdir"]["lua"] %}
+      {% set lua_data = fs["readdir"]["lua"] %}
+    printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
+    exit
+    {% endif %}
+  } 
+
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
 
@@ -31,7 +40,6 @@ export DIR_NAME=$1
     {% if "name" in fs %}
     printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
     {% endif %}
-
 
     {# set context #} 
     path_lvl=NF-1
