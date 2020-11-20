@@ -37,7 +37,7 @@ export DIR_NAME=$1
   {% endfor %} 
 
   if (path !~ /^\/.lua.*/ && path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
-  {% if fs_op in fs %}
+  {% if fs_op in fs and "sh" in fs[fs_op] %}
 
     try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
 
@@ -54,7 +54,7 @@ export DIR_NAME=$1
 
 
 
-    {% set handler = fs[fs_op] %}
+    {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler | b64encode }} | base64 -d\n")
   {% endif %} {# if fs_op in fs #}
   } 
