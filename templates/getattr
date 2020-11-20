@@ -23,6 +23,8 @@ export DIR_NAME=$1
       {% continue %}
     {% endif %} {# if path != fs_op #}
   {% endfor %}
+
+
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
     {# set context #} 
@@ -33,7 +35,7 @@ export DIR_NAME=$1
     {% endif %}
 
 
-    {% set handler = fs[fs_op] %}
+    {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler  | b64encode }} | base64 -d\n")
   {% endif %} {# if fs_op in fs #}
   } 
