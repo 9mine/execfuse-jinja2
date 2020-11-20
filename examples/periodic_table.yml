@@ -53,7 +53,7 @@ fs:
           - period
           - phase
           - image
-        lua: print(".readdir.lua")
+        lua: print(".readdir.lua /<element_name>")
 
       "/image":
         cache: 9600 # in seconds

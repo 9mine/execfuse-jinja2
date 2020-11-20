@@ -15,7 +15,7 @@ export DIR_NAME=$1
 
   {%- for path in fs -%}
     {# skip virtual parent ref #}
-    {%- if path == "__parent" or path == ".lua" -%}
+    {%- if path == "__parent" -%}
       {% continue %} 
     {% endif %} {# if path == "__parent" #}
     {% if path != fs_op and path[:1] == "/" %} 

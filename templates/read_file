@@ -24,15 +24,14 @@ export DIR_NAME=$1
     {% endif %} {# if path != fs_op #}
   {% endfor %}
 
-  if (path ~ /^{{ (parent_path + '.readdir\.lua') | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
+  if (path ~ /^\/.lua{{ (parent_path + "/readdir") | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
     {% if "readdir" in fs and "lua" in fs["readdir"]["lua"] %}
       {% set lua_data = fs["readdir"]["lua"] %}
     printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
     exit
     {% endif %}
   } 
-
-  if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
+  if (path !~ /^\/.lua.*/ && path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
 
     try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
