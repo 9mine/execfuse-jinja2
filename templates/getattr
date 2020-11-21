@@ -32,15 +32,16 @@ export DIR_NAME=$1
   } 
 
   {%- set r1 =  parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") %}
-  if (path ~ /^\/.lua{{ r1 }}$/) {
+  if (path ~ /^\/.lua.*/) {
+
     # by default all .lua entites are directories, exclude names from execfuse_fs_ops
-    output = sprintf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
-    {% for e_fs_op in execfuse_fs_ops %}
-      if ($NF == "{{ e_fs_op }}") {
+
+    if (path ~ /\/.lua.*({{ execfuse_fs_ops | join("|") }})$/) {
         output = sprintf("echo {{ "echo 'ino=1 mode=-rwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0'" | b64encode }} | base64 -d\n")
-      } 
-    {% endfor %} 
-    printf(output)
+    } else { 
+      output = sprintf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
+    }
+    print(output)
     exit 0
   }
   if (path ~ /^{{ r1 }}$/) {

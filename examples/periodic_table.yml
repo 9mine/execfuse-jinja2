@@ -61,10 +61,10 @@ fs:
           sh: |
             URL=`curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").image'`
             curl -o ${URL}
-          lua: print(".read_file.lua /<element_name>/<property>")
+          lua: print(".read_file.lua /<element_name>/image")
         getattr: 
           sh: *file
-          lua: print(".getattr.lua /<element_name>/<property>") 
+          lua: print(".getattr.lua /<element_name>/image) 
             
 
       "/[a-z]+":
