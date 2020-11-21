@@ -7,6 +7,8 @@ export DIR_NAME=$1
 
 {% include 'cache.j2' %}
 
+{% set execfuse_fs_ops = ["init","unlink","truncate","getattr","chmod","mkdir","readdir","chown","destro","open","create","mknod","check_args","rename","closed","read_file","mkfifo","symlink","link","utimens","write_file","rmdir","readlink"] %}
+
 {% macro tree(parent_path, fs, parent_fs) %}
 
   {% if fs is mapping and parent_fs is not none %}
@@ -23,7 +25,26 @@ export DIR_NAME=$1
       {% continue %}
     {% endif %} {# if path != fs_op #}
   {% endfor %}
-  if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
+
+  if (path == "/.lua") {
+    printf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
+    exit
+  } 
+
+  {%- set r1 =  parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") %}
+  if (path ~ /^\/.lua.*/) {
+
+    # by default all .lua entites are directories, exclude names from execfuse_fs_ops
+
+    if (path ~ /\/.lua.*({{ execfuse_fs_ops | join("|") }})$/) {
+        output = sprintf("echo {{ "echo 'ino=1 mode=-rwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0'" | b64encode }} | base64 -d\n")
+    } else { 
+      output = sprintf("echo {{ "echo 'ino=1 mode=drwxr-xr-x nlink=1 uid=0 gid=0 rdev=0 size=0 blksize=512 blocks=2 atime=0 mtime=0 ctime=0 '" | b64encode }} | base64 -d\n")
+    }
+    print(output)
+    exit 0
+  }
+  if (path ~ /^{{ r1 }}$/) {
   {% if fs_op in fs %}
     {# set context #} 
     path_lvl=NF-1
@@ -33,7 +54,7 @@ export DIR_NAME=$1
     {% endif %}
 
 
-    {% set handler = fs[fs_op] %}
+    {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler  | b64encode }} | base64 -d\n")
   {% endif %} {# if fs_op in fs #}
   } 

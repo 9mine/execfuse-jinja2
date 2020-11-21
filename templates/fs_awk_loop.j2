@@ -17,7 +17,7 @@ BEGIN {
 } 
 {
   path=$0
-
+  
 {{ tree("/", fs, none) }}
 
 }' | sh - | sh - | tee new_$CACHE_FILE_NAME && mv new_$CACHE_FILE_NAME $CACHE_FILE_NAME
