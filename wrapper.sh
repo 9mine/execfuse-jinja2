@@ -35,22 +35,7 @@ cat > ${TMP_FILE_ORIG}
 jinja2 $TMP_FILE_ORIG > $TMP_FILE
 
 export TEMPLATE_DIR="templates/"
-export WRAPPER_NAME=`cat $TMP_FILE | yq - r 'wrapper_name' || :`
-export COMPILED_DIR="${1:-$WRAPPER_NAME}"
-
-test -n "${COMPILED_DIR}" || {
-  cat<<EOF > /dev/stderr
-You need to specify directory of compiled jinja2 templates
-Specify wrapper_name in yaml definition like this:
-
-wrapper_name: your_fs_name
-
-or execute ./wrapper.sh with argument, like:
-
-$ cat fs_definition.yml | ./wrapper.sh your_fs_name
-EOF
-  exit 1
-} 
+export COMPILED_DIR="compiled"
 
 test -d ${COMPILED_DIR} || mkdir -p ${COMPILED_DIR} 
 
