@@ -45,8 +45,10 @@ cat > $CACHE_FILE_NAME
 
 
 
-    {% set handler = fs[fs_op] %}
+    {%- if "sh" in fs[fs_op] %}
+      {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler | b64encode }} | base64 -d\n")
+    {%- endif %}
   {% endif %} {# if fs_op in fs #}
   } 
 {%- endmacro %}
