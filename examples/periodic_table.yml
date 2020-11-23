@@ -30,20 +30,15 @@ wrapper_name: periodic_table
 
 fs:
   "/":                                                    
+    <<: *is_dir
     cache: 3600 #in second
     readdir: 
       sh: |
         lynx -nonumbers -dump -width 256 https://en.wikipedia.org/wiki/List_of_chemical_elements | grep -E '^   [0-9]+ [A-Z]' | awk '{print $2}'
-      lua: print(".readdir.lua /")
-    getattr: 
-      sh: *dir
-      lua: print(".getattr.lua /")
     "/[A-Za-z]+": #                                           # /<element_name>
+      <<: *is_dir
       cache: 3600000 #in second
       name: element_name
-      getattr: 
-        sh: *dir
-        lua: print(".getattr.lua /<element_name>")
       readdir: 
         list:
           - name
@@ -56,23 +51,17 @@ fs:
         lua: print(".readdir.lua /<element_name>")
 
       "/image":
+        <<: *is_file
         cache: 9600 # in seconds
         read_file: 
           sh: |
             URL=`curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").image'`
             curl -o ${URL}
-          lua: print(".read_file.lua /<element_name>/image")
-        getattr: 
-          sh: *file
-          lua: print(".getattr.lua /<element_name>/image) 
             
 
       "/[a-z]+":
+        <<: *is_file
         cache: 9600 # in seconds
         name: element_property
         read_file: 
           sh: curl https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/periodic-table-lookup.json | jq -r '.[] | select(.symbol? and .symbol == "'${element_name}'").'${element_property}
-          lua: print(".read_file.lua")
-        getattr: 
-          sh: *file
-          lua: print(".getattr.lua")

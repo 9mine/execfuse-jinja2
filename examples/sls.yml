@@ -38,6 +38,9 @@ fs:
           - kubeless
       getattr: 
         sh: *dir 
+      "/[^\/]+":
+
+        readdir:
         
     "/k8s":
       readdir:

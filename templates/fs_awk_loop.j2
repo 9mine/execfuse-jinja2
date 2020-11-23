@@ -1,4 +1,4 @@
-echo ${DIR_NAME} | awk -v CACHE_FILE_NAME=$CACHE_FILE_NAME -F/ '
+echo ${DIR_NAME} | awk -v CACHE_FILE_NAME=$CACHE_FILE_NAME -v PAYLOAD_FILE=${HOME_TMP}/${CACHE_FILE_NAME} -F/ '
 function try_cache(filename, timeout) {
   cmd = sprintf("stat -c %%Y %s", filename)
   cmd | getline cached_time
@@ -11,6 +11,7 @@ BEGIN {
 
   printf("echo export LVL1=\"/\"\n")
   printf("echo export CACHE_FILE_NAME=%s\n", CACHE_FILE_NAME)
+  printf("echo export PAYLOAD_FILE=%s\n", PAYLOAD_FILE)
   for (i = 2; i <= NF; i++) {
     printf("echo export LVL%d=\"%s\"\n", i, $i)
   } 
