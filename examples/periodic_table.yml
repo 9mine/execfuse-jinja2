@@ -57,7 +57,7 @@ fs:
         cache: 9600 # in seconds
         read_file: 
           sh: |
-            curl https://www.inorganicventures.com/pub/media/inorganicperiodictable/elements/${element_name} | convert gif:- png:-
+            curl https://www.inorganicventures.com/pub/media/inorganicperiodictable/elements/${element_name}.gif | convert gif:- png:-
           lua: print(".read_file.lua /<element_name>/<property>")
         getattr: 
           sh: *file
