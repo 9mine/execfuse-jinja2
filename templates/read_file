@@ -9,6 +9,16 @@ export DIR_NAME=$1
 
 {% set execfuse_fs_ops = ["init","unlink","truncate","getattr","chmod","mkdir","readdir","chown","destro","open","create","mknod","check_args","rename","closed","read_file","mkfifo","symlink","link","utimens","write_file","rmdir","readlink"] %}
 
+{% macro tree_up(fs) %}
+  {% if "name" in fs %}
+    printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
+  {% endif %}
+  path_lvl=path_lvl-1
+  {% if "__parent" in fs %}
+    {{ tree_up(fs.__getitem__("__parent")) }}
+  {% endif %} 
+{% endmacro %}
+
 {% macro tree(parent_path, fs, parent_fs) %}
 
   {% if fs is mapping and parent_fs is not none %}
@@ -41,18 +51,8 @@ export DIR_NAME=$1
 
     try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
 
-    {% if "name" in fs %}
-    printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
-    {% endif %}
-
-    {# set context #} 
-    path_lvl=NF-1
-    {% if fs["__parent"] is mapping and "name" in fs['__parent'] %}
-    printf("echo export \"%s\"=\"%s\"\n", "{{ fs['__parent'].name }}", $path_lvl)
-    path_lvl=path_lvl-1  
-    {% endif %}
-
-
+    path_lvl=NF
+    {{ tree_up(fs) }}
 
     {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler | b64encode }} | base64 -d\n")
