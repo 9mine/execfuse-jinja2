@@ -9,10 +9,20 @@ export DIR_NAME=$1
 
 cat > $CACHE_FILE_NAME
 
+{% macro tree_up(fs) %}
+  {% if "name" in fs %}
+    printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
+  {% endif %}
+  path_lvl=path_lvl-1
+  {% if "__parent" in fs %}
+    {{ tree2(fs.__getitem__("__parent")) }}
+  {% endif %} 
+{% endmacro %}
+
 {% macro tree(parent_path, fs, parent_fs) %}
 
   {% if fs is mapping and parent_fs is not none %}
-    {% set dummy=fs.__setitem__("__parent", parent_fs) %}
+    {% set dummy=fs.__setitem__("__parent", parent_fs.copy()) %}
   {% endif %}
 
   {%- for path in fs -%}
@@ -28,22 +38,8 @@ cat > $CACHE_FILE_NAME
   if (path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs %}
 
-    # no cache for write op
-    #try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
-
-    {% if "name" in fs %}
-    printf("echo export \"%s\"=\"%s\"\n", "{{ fs.name }}", $NF)
-    {% endif %}
-
-
-    {# set context #} 
-    path_lvl=NF-1
-    {% if fs["__parent"] is mapping and "name" in fs['__parent'] %}
-    printf("echo export \"%s\"=\"%s\"\n", "{{ fs['__parent'].name }}", $path_lvl)
-    path_lvl=path_lvl-1  
-    {% endif %}
-
-
+    path_lvl=NF
+    {{ tree2(fs) }}
 
     {%- if "sh" in fs[fs_op] %}
       {% set handler = fs[fs_op]["sh"] %}
