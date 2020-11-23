@@ -7,18 +7,18 @@ function try_cache(filename, timeout) {
     exit(0)
   }
 } 
-BEGIN {
-
-  printf("echo export LVL1=\"/\"\n")
-  printf("echo export CACHE_FILE_NAME=%s\n", CACHE_FILE_NAME)
-  printf("echo export HOME_TMP=%s\n", HOME_TMP)
-  printf("echo export PAYLOAD_FILE=%s\n", PAYLOAD_FILE)
-  for (i = 2; i <= NF; i++) {
-    printf("echo export LVL%d=\"%s\"\n", i, $i)
-  } 
-} 
 {
   path=$0
+
+  if ($2 != ".lua") {
+    printf("echo export LVL1=\"/\"\n")
+    printf("echo export CACHE_FILE_NAME=%s\n", CACHE_FILE_NAME)
+    printf("echo export HOME_TMP=%s\n", HOME_TMP)
+    printf("echo export PAYLOAD_FILE=%s\n", PAYLOAD_FILE)
+    for (i = 2; i <= NF; i++) {
+      printf("echo export LVL%d=\"%s\"\n", i, $i)
+    } 
+  }
   
 {{ tree("/", fs, none) }}
 
