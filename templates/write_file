@@ -15,7 +15,7 @@ cat > $CACHE_FILE_NAME
   {% endif %}
   path_lvl=path_lvl-1
   {% if "__parent" in fs %}
-    {{ tree2(fs.__getitem__("__parent")) }}
+    {{ tree_up(fs.__getitem__("__parent")) }}
   {% endif %} 
 {% endmacro %}
 
@@ -39,7 +39,7 @@ cat > $CACHE_FILE_NAME
   {% if fs_op in fs %}
 
     path_lvl=NF
-    {{ tree2(fs) }}
+    {{ tree_up(fs) }}
 
     {%- if "sh" in fs[fs_op] %}
       {% set handler = fs[fs_op]["sh"] %}
