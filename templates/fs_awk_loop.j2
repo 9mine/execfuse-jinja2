@@ -22,4 +22,4 @@ function try_cache(filename, timeout) {
   
 {{ tree("/", fs, none) }}
 
-}' | sh - | sh - | tee new_$CACHE_FILE_NAME && mv new_$CACHE_FILE_NAME $CACHE_FILE_NAME
+}' | sh - | sh - | sed -r 's/^local ([^=]+)=(.*)$/local \1="\2"/g' | tee new_$CACHE_FILE_NAME && mv new_$CACHE_FILE_NAME $CACHE_FILE_NAME

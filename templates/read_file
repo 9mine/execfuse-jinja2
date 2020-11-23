@@ -14,7 +14,7 @@ export DIR_NAME=$1
     printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
   {% endif %}
   {% if "name" in fs and ctx == "lua" %}
-    printf("echo echo local %s=\"\"%s\"\"\n", "{{ fs.name }}", $path_lvl)
+    printf("echo echo local %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
   {% endif %}
   path_lvl=path_lvl-1
   {% if "__parent" in fs %}
