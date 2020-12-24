@@ -1,5 +1,6 @@
 #!/bin/sh
 
 {% include 'common.j2' %}
+{% import 'util.j2' as util %}
 
 mkdir -p ${HOME_TMP}
