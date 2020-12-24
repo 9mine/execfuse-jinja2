@@ -1,6 +1,7 @@
 #!/bin/sh
 {% set fs_op = self._TemplateReference__context.name %}
 {% include 'common.j2' %}
+{% import 'util.j2' as util %}
 set -e
 cd ${HOME_TMP}
 export DIR_NAME=$1
@@ -8,16 +9,6 @@ export DIR_NAME=$1
 {% include 'cache.j2' %}
 
 cat > $CACHE_FILE_NAME
-
-{% macro tree_up(fs) %}
-  {% if "name" in fs %}
-    printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
-  {% endif %}
-  path_lvl=path_lvl-1
-  {% if "__parent" in fs %}
-    {{ tree_up(fs.__getitem__("__parent")) }}
-  {% endif %} 
-{% endmacro %}
 
 {% macro tree(parent_path, fs, parent_fs) %}
 
@@ -39,7 +30,7 @@ cat > $CACHE_FILE_NAME
   {% if fs_op in fs %}
 
     path_lvl=NF
-    {{ tree_up(fs) }}
+    {{ util.tree_up(fs) }}
 
     {%- if "sh" in fs[fs_op] %}
       {% set handler = fs[fs_op]["sh"] %}

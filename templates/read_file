@@ -1,26 +1,12 @@
 #!/bin/sh
 {% set fs_op = self._TemplateReference__context.name %}
 {% include 'common.j2' %}
+{% import 'util.j2' as util %} 
 set -e
 cd ${HOME_TMP}
 export DIR_NAME=$1
 
 {% include 'cache.j2' %}
-
-{% set execfuse_fs_ops = ["init","unlink","truncate","getattr","chmod","mkdir","readdir","chown","destro","open","create","mknod","check_args","rename","closed","read_file","mkfifo","symlink","link","utimens","write_file","rmdir","readlink"] %}
-
-{% macro tree_up(fs, ctx) %}
-  {% if "name" in fs and ctx == "sh" %}
-    printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
-  {% endif %}
-  {% if "name" in fs and ctx == "lua" %}
-    printf("echo echo local %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
-  {% endif %}
-  path_lvl=path_lvl-1
-  {% if "__parent" in fs %}
-    {{ tree_up(fs.__getitem__("__parent"), ctx) }}
-  {% endif %} 
-{% endmacro %}
 
 {% macro tree(parent_path, fs, parent_fs) %}
 
@@ -39,10 +25,10 @@ export DIR_NAME=$1
     {% endif %} {# if path != fs_op #}
   {% endfor %}
 
-  {%- for e_fs_op in execfuse_fs_ops %}
+  {%- for e_fs_op in util.execfuse_fs_ops %}
   if (path ~ /^\/.lua{{ (parent_path + "/" + e_fs_op) | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
     path_lvl=NF-1
-    {{ tree_up(fs, "lua") }}
+    {{ util.tree_up(fs, "lua") }}
     {% if e_fs_op in fs and "lua" in fs[e_fs_op] %}
       {% set lua_data = fs[e_fs_op]["lua"] %}
     printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
@@ -57,7 +43,7 @@ export DIR_NAME=$1
     try_cache(CACHE_FILE_NAME, {{ fs.cache | default(0) }})
 
     path_lvl=NF
-    {{ tree_up(fs, "sh") }}
+    {{ util.tree_up(fs, "sh") }}
 
     {% set handler = fs[fs_op]["sh"] %}
     printf("echo {{ handler | b64encode }} | base64 -d\n")
