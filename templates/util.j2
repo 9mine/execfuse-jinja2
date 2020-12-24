@@ -1,0 +1,12 @@
+{% macro tree_up(fs, ctx) %}
+  {% if "name" in fs and ctx == "sh" %}
+    printf("echo export %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
+  {% endif %}
+  {% if "name" in fs and ctx == "lua" %}
+    printf("echo echo local %s=\"%s\"\n", "{{ fs.name }}", $path_lvl)
+  {% endif %}
+  path_lvl=path_lvl-1
+  {% if "__parent" in fs %}
+    {{ tree_up(fs.__getitem__("__parent"), ctx) }}
+  {% endif %} 
+{% endmacro %}
