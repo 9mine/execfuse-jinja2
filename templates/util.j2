@@ -10,3 +10,5 @@
     {{ tree_up(fs.__getitem__("__parent"), ctx) }}
   {% endif %} 
 {% endmacro %}
+
+{% set execfuse_fs_ops = ["init","unlink","truncate","getattr","chmod","mkdir","readdir","chown","destro","open","create","mknod","check_args","rename","closed","read_file","mkfifo","symlink","link","utimens","write_file","rmdir","readlink"] %}

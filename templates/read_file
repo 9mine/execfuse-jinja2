@@ -8,8 +8,6 @@ export DIR_NAME=$1
 
 {% include 'cache.j2' %}
 
-{% set execfuse_fs_ops = ["init","unlink","truncate","getattr","chmod","mkdir","readdir","chown","destro","open","create","mknod","check_args","rename","closed","read_file","mkfifo","symlink","link","utimens","write_file","rmdir","readlink"] %}
-
 {% macro tree(parent_path, fs, parent_fs) %}
 
   {% if fs is mapping and parent_fs is not none %}
@@ -27,7 +25,7 @@ export DIR_NAME=$1
     {% endif %} {# if path != fs_op #}
   {% endfor %}
 
-  {%- for e_fs_op in execfuse_fs_ops %}
+  {%- for e_fs_op in util.execfuse_fs_ops %}
   if (path ~ /^\/.lua{{ (parent_path + "/" + e_fs_op) | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
     path_lvl=NF-1
     {{ util.tree_up(fs, "lua") }}
