@@ -1,22 +1,21 @@
-name: 9p-execfuse-jinja2
+name: 9p InfernoOS-ExecfuseFS Base Image
 on:
   push
 jobs:
   build:
+    name: Build and Push Docker Image
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-           submodules: true
-
-      - name: build docker image
-        run: docker build -t ${{ secrets.REGISTRY_USERNAME }}/9p-execfuse-jinja2:${GITHUB_REF##*/} -f Dockerfile.inferno .
+      
+      - name: Build 9p InfernoOS-ExecfuseFS Base Image
+        run: docker build -t ${{ secrets.REGISTRY_ORGANIZATION }}/9p-execfuse-jinja2:${GITHUB_REF##*/} -f Dockerfile.inferno .
 
       - name: login to hub.docker.com
         run: docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: push image to registry
-        run: docker image push ${{ secrets.REGISTRY_USERNAME }}/9p-execfuse-jinja2:${GITHUB_REF##*/}
+      - name:  Push 9p InfernoOS-ExecfuseFS Base Image Registry
+        run: docker image push ${{ secrets.REGISTRY_ORGANIZATION }}/9p-execfuse-jinja2:${GITHUB_REF##*/}
       
       - name: Notify Telegram
         uses: yanzay/notify-telegram@v0.1.0
