@@ -25,18 +25,6 @@ export DIR_NAME=$1
     {% endif %} {# if path != fs_op #}
   {% endfor %}
 
-  {%- for e_fs_op in util.execfuse_fs_ops %}
-  if (path ~ /^\/.lua{{ (parent_path + "/" + e_fs_op) | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
-    path_lvl=NF-1
-    {{ util.tree_up(fs, "lua") }}
-    {% if e_fs_op in fs and "lua" in fs[e_fs_op] %}
-      {% set lua_data = fs[e_fs_op]["lua"] %}
-    printf("echo {{ ('cat <<EOF\n' + lua_data + '\nEOF\n') | b64encode }} | base64 -d\n")
-    exit
-    {% endif %}
-  }
-  {% endfor %} 
-
   if (path !~ /^\/.lua.*/ && path ~ /^{{ parent_path | regex_replace("//", "/", "g") | regex_replace("/", "\/", "g") }}$/) {
   {% if fs_op in fs and "sh" in fs[fs_op] %}
 
