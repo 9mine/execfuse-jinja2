@@ -30,7 +30,7 @@ cat > $CACHE_FILE_NAME
   {% if fs_op in fs %}
 
     path_lvl=NF
-    {{ util.tree_up(fs) }}
+    {{ util.tree_up(fs, "sh") }}
 
     {%- if "sh" in fs[fs_op] %}
       {% set handler = fs[fs_op]["sh"] %}
