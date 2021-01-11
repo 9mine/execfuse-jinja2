@@ -1,9 +1,21 @@
 Very early PoC stage, more details coming soon 
 
+## Dependencies
+
+Debian/Ubuntu
+
+    pip install jinja2
+    pip install jinja2-cli
+    pip install jinja2-ansible-filters
+
+
 Next command will generate execfuse-like files based on command definitions in `examples/sls.yml`
 ```
 jinja2 examples/sls.yml | docker run --rm -i dievri/execfuse-jinja2:master | tar xvf - -C .
 ```
+Without docker container:
+
+    mkdir -p sls && jinja2 examples/sls.yml | ./wrapper.sh | tar xvf - -C sls --strip 1
 
 The result should looks like
 ```
