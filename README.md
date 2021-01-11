@@ -27,7 +27,7 @@ slsfs
 └── write_file
 ```
 
-Then, you can mount this filesystem with execfuse
+Then, you can mount this filesystem with [execfuse](https://github.com/metacoma/execfuse/tree/wrapper)
 
 ```
 $ mkdir -p /mnt/slsfs
