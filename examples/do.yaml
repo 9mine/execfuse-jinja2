@@ -1,0 +1,29 @@
+{% include './common.j2' %}
+fs:
+  # root
+  "/":
+    readdir:
+      list:
+        - droplets
+    getattr:
+      sh: *dir 
+    "/droplets":
+      readdir:
+        sh: doctl compute droplet list -o json | jq '.[].name' -r
+      getattr:
+        sh: *dir
+      "/[0-9a-z-]+":
+        name: droplet_name
+        readdir:
+          list:
+            - memory
+            - vcpus
+            - disk
+        getattr:
+          sh: *dir
+        "/(memory|vcpus|disk)":
+          name: droplet_prop
+          read_file:
+            sh: doctl compute droplet get $droplet_name -o json | jq -r ".[].$droplet_prop"
+          getattr:
+            sh: *file
