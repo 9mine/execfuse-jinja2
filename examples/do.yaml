@@ -3,27 +3,35 @@ fs:
   # root
   "/":
     readdir:
-      list:
-        - droplets
+      sh: ls /tmp/accounts
     getattr:
-      sh: *dir 
-    "/droplets":
+      sh: *dir
+
+    "/[a-z0-9-]+":
+      name: account
       readdir:
-        sh: doctl compute droplet list -o json | jq '.[].name' -r
+        list:
+          - droplets
       getattr:
         sh: *dir
-      "/[0-9a-z-]+":
-        name: droplet_name
+
+      "/droplets":
         readdir:
-          list:
-            - memory
-            - vcpus
-            - disk
+          sh: doctl --access-token `cat /tmp/accounts/$account` compute droplet list -o json | jq '.[].name' -r
         getattr:
           sh: *dir
-        "/(memory|vcpus|disk)":
-          name: droplet_prop
-          read_file:
-            sh: doctl compute droplet get $droplet_name -o json | jq -r ".[].$droplet_prop"
+        "/[0-9a-z-]+":
+          name: droplet_name
+          readdir:
+            list:
+              - memory
+              - vcpus
+              - disk
           getattr:
-            sh: *file
+            sh: *dir
+          "/(memory|vcpus|disk)":
+            name: droplet_prop
+            read_file:
+              sh: doctl --access-token `cat /tmp/accounts/$account` compute droplet get $droplet_name -o json | jq -r ".[].$droplet_prop"
+            getattr:
+              sh: *file
